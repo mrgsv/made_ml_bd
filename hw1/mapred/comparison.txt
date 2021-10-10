@@ -1,0 +1,5 @@
+Mean (numpy): 152.7206871868289
+Mean (mapred): 152.72068718682812
+
+Variance (numpy): 57672.84569843359
+Variance (mapred): 57672.84569843323

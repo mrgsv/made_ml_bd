@@ -1,0 +1,17 @@
+1: hdfs dfs -mkdir /tmp_folder
+2: hdfs dfs -mkdir /tmp_folder/tmp_folder_1
+3: 
+  1: Директория `/user/<username>/.Trash/<Current directory>`, из которой файлы удаляются перманентно после некоторого промежутка времени, который задается в настройках hdfs.
+  2: В команду `rm` нужно добавить опцию `-skipTrash`.
+4: hdfs dfs -touchz /tmp_folder/tmp_folder_1/lol
+5: hdfs dfs -rm /tmp_folder/tmp_folder_1/lol
+
+1_: hdfs dfs -put lol.txt /
+2_: hdfs dfs -cat /lol.txt
+3_: hdfs dfs -tail /lol.txt (последний килобайт, быстро); hdfs dfs -cat /lol.txt | tail -n 3 (3 последние строки, медленно)
+4_: hdfs dfs -cat /lol.txt | head -n 3
+5_: hdfs dfs -cp /lol.txt /tmp_folder/tmp_folder_1/lol.txt
+
+2__: hdfs dfs -setrep -w 4 /tmp_folder/tmp_folder_1/lol.txt (очень много времени ушло на увеличение фактора репликации до 4, мало времени заняло уменьшение фактора репликации до 2)
+3__: hdfs fsck /tmp_folder/tmp_folder_1/lol.txt -files -blocks -locations
+4__: hdfs fsck -blockId blk_1073741837_1013
