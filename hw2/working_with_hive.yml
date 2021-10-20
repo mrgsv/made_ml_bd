@@ -1,0 +1,54 @@
+Исполнителя с максимальным числом скробблов: select artist_lastfm from artists where scrobbles_lastfm in (select max(scrobbles_lastfm) from artists);
+  output: The Beatles
+Самый популярный тэг на ластфм: select counts.tag from (select tag, count(1) as cnt from artists lateral view explode(split(tags_lastfm, "; ")) tag_table as tag where length(tag) > 0 group by tag order by cnt desc limit 1) as counts;
+  output: seen live
+Самые популярные исполнители 10 самых популярных тегов ластфм: \
+  select res.artist_lastfm
+  from (select distinct artist_lastfm, t1.scrobbles_lastfm
+  from (select tag, artist_lastfm, scrobbles_lastfm
+        from artists 
+        lateral view explode(split(tags_lastfm, "; ")) tag_table as tag 
+        where length(tag) > 0
+        order by scrobbles_lastfm desc) as t1 
+  where t1.tag in
+  (select counts.tag
+  from (
+          select tag,  count(1) as cnt 
+          from artists 
+          lateral view explode(split(tags_lastfm, "; ")) tag_table as tag 
+          where length(tag) > 0
+          group by tag
+          order by cnt desc
+          limit 10
+  ) as counts)
+  order by t1.scrobbles_lastfm desc
+  limit 10) as res;
+  output: \
+    The Beatles
+    Radiohead
+    Coldplay
+    Muse
+    Arctic Monkeys
+    Pink Floyd
+    Linkin Park
+    Red Hot Chili Peppers
+    Lady Gaga
+    Metallica
+10 самых прослушиваемых исполнителей и их среднее число прослушиваний на одного слушателя: \
+  select t1.artist_lastfm, t1.play_ratio
+  from (
+      select artist_lastfm, scrobbles_lastfm / listeners_lastfm as play_ratio, listeners_lastfm
+      from artists
+      order by listeners_lastfm desc
+      limit 10) as t1;
+  output: \
+    Coldplay	66.91579794509666
+    Radiohead	105.55643770094969
+    Red Hot Chili Peppers	63.5781284118563
+    Rihanna	43.71227501775375
+    Eminem	44.15839829021577
+    The Killers	47.12763893617963
+    Kanye West	54.34545981302366
+    Nirvana	52.02653260296184
+    Muse	84.32062283659184
+    Queen	47.64939445177797
